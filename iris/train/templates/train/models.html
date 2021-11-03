@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block main %}
+    <div class="container pt-5">
+        <div class="row">
+
+        <h1>Trained Models</h1>
+
+            <table class="table">
+                <thead>
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">C</th>
+                <th scope="col">Train Score</th>
+                <th scope="col">Test Score</th>
+                <th scope="col">Date Trained</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for data in dataset %}
+                    <tr>
+                    <th scope="row">{{ data.id }}</th>
+                    <td>{{ data.model_name }}</td>
+                    <td>{{ data.hp_c }}</td>
+                    <td>{{ data.train_score }}</td>
+                    <td>{{ data.test_score }}</td>
+                    <td>{{ data.train_date }}</td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block main %}
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Training Result</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h5 class="pt-3">Hyperparameters:</h5>
+                <div>C: <span id="hpc"></span></div>
+                <h5 class="pt-3">Model Performance:</h5>
+                <div>Train Score: <span id="trs"></span></div>
+                <div>Test Score: <span id="tes"></span></div>
+                <h5 class="pt-3">Confusion Matrix:</h5>
+                {% load static %}
+                <img src="/images/cm.png" alt="confusion matrix" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <a class="btn btn-primary" href="/train/models" role="button">View Models</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container pt-5">
+    <div class="row justify-content-md-center">
+        <div class="col-md-4">
+            <h1>Train a new SVC</h1>
+            <form action="" id="post-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="hp_c">C</label>
+                    <input type="number" step="0.1" class="form-control" id="hp_c" placeholder="" required>
+                </div>
+                <button type="submit" value="Submit" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Train</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).on('submit', '#post-form', function(e){
+        e.preventDefault();
+        $.ajax({
+            type:'POST',
+            url:'{% url "train:submit_training" %}',
+            data:{
+                hp_c:$('#hp_c').val(),
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                action: 'post'
+            },
+            success:function(json) {
+                document.forms["post-form"].reset();
+                document.getElementById("hpc").innerHTML = json['hp_c']
+                document.getElementById("trs").innerHTML = json['train_score']
+                document.getElementById("tes").innerHTML = json['test_score']
+            },
+            error : function(xhr,errmsg,err) {
+
+            }
+        });
+    })
+</script>
+{% endblock %}
